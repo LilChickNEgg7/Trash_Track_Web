@@ -57,7 +57,7 @@
           otherItem.classList.remove('active');
         });
 
-        // Add 'active' class to the clicked item
+        // Add the 'active' class to the clicked item
         item.classList.add('active');
       });
     });
