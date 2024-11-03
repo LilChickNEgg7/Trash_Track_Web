@@ -28,8 +28,8 @@
     <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
     <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-   
-   
+
+
     <!-- Template Main CSS File -->
     <link href="assets/css/style.css" rel="stylesheet">
     <%--<style>
@@ -249,7 +249,7 @@
                                     <h6>
                                         <asp:Label ID="Label1" runat="server" Text=""></asp:Label></h6>
                                     <span>
-                                        <asp:Label ID="Label3" runat="server" Text="Administrator"></asp:Label></span>
+                                        <asp:Label ID="Employee_Role" runat="server" Text=""></asp:Label></span>
                                 </li>
                                 <li>
                                     <hr class="dropdown-divider">
@@ -339,7 +339,11 @@
                                     <i class="bi bi-circle"></i><span>Manage Truck Scale Slip</span>
                                 </a>
                             </li>
-
+                            <li>
+                                <a href="Dispatcher_AddSchedule.aspx">
+                                    <i class="bi bi-circle"></i><span>Manage Booking Limit Schedule</span>
+                                </a>
+                            </li>
 
 
 
@@ -371,10 +375,10 @@
             <main id="main" class="main">
 
                 <div class="pagetitle">
-                    <h1 style="padding-top: 20px; color: chartreuse">Dashboard</h1>
+                    <h1 style="padding-top: 20px; color: chartreuse">Manage Truck Scale Slip</h1>
                     <nav>
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="WAREHOUSE_DASHBOARD.aspx">Dashboard</a></li>
+                            <%--<li class="breadcrumb-item"><a href="WAREHOUSE_DASHBOARD.aspx">Dashboard</a></li>--%>
                             <%--<li class="breadcrumb-item">Add Item</li>--%>
                         </ol>
                     </nav>
@@ -433,14 +437,14 @@
                                     <ItemStyle Width="150px" Wrap="true" />
                                 </asp:BoundField>
 
-                                <asp:TemplateField HeaderText="Action">
+                                <asp:TemplateField HeaderText="View Booking Action">
                                     <ItemTemplate>
-                                        <asp:LinkButton ID="update" runat="server" OnClick="Update_Click" CommandArgument='<%# Eval("bk_id") %>' CssClass="btn btn-info">
-                                            <i class="bi bi-info-circle"> View Booking</i>
-                                            <%--<asp:Image ID="imgEdit" runat="server" ImageUrl="~/Pictures/editlogo.png" Width="35%" Height="35%" Style="margin-right: 10px" AlternateText="Edit" />--%>
-                                                          <%--<button type="button" class="btn btn-info"><i class="bi bi-info-circle"></i></button>--%>
+                                        <asp:LinkButton ID="update" runat="server" OnClick="Update_Click" CommandArgument='<%# Eval("bk_id") %>'>
+                                            <%--<i class="bi bi-info-circle"> View Booking</i>--%>
+                                            <asp:Image ID="imgEdit" runat="server" ImageUrl="~/Pictures/editlogo.png" Width="20%" Height="20%" Style="margin-right: 10px" AlternateText="View Booking" />
+                                                          
                                         </asp:LinkButton>
-                                        <%--<button type="button" class="btn btn-primary"><i class="bi bi-star me-1"></i> With Text</button>--%>
+                                        
                                     </ItemTemplate>
                                 </asp:TemplateField>
 
@@ -471,9 +475,9 @@
                         <div class="card bg-light" style="background-color: #052507;">
                             <!-- Header Section -->
                             <div class="card-header text-center" style="background-color: #052507; color: aquamarine;">
-                                <h4 class="mb-0">Update Information</h4>
+                                <h4 class="mb-0">Update Booking Information</h4>
                             </div>
-
+                            
                             <!-- Body Section -->
                             <div class="card-body" style="background-color: #052507;">
                                 <div class="row">
@@ -698,7 +702,7 @@
             const fileInput = document.getElementById('<%= formFile.ClientID %>');
             const imagePreview = document.getElementById('<%= imagePreview.ClientID %>');
             const file = fileInput.files[0];
-            const allowedExtensions = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
+            const allowedExtensions = ["image/jpeg", "image/jpg", "image/png"];
             const fileError = document.getElementById('fileError');
 
             if (file && allowedExtensions.includes(file.type)) {
@@ -711,9 +715,17 @@
             } else {
                 imagePreview.src = "Pictures/blank_prof.png";
                 fileError.style.display = "block";
-                alert("Invalid file. Please upload a valid image.");
+
+                // Replace the default alert with SweetAlert
+                Swal.fire({
+                    title: 'Invalid File',
+                    text: 'Please upload a valid image (JPEG/JPG or PNG).',
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6'
+                });
             }
         }
+
 
      <%--   function previewImageUpdate() {
             const fileInput = document.getElementById('<%=FileUpload1.ClientID%>');
