@@ -51,13 +51,13 @@ namespace Capstone
         protected global::System.Web.UI.WebControls.Label Label1;
 
         /// <summary>
-        /// Label3 control.
+        /// Employee_Role control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label Label3;
+        protected global::System.Web.UI.WebControls.Label Employee_Role;
 
         /// <summary>
         /// txtSearch control.
