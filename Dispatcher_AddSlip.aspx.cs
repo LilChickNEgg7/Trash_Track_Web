@@ -28,54 +28,103 @@ namespace Capstone
             if (!IsPostBack)
             {
                 GridViewBooking();
-
+                //LoadProfile();
 
             }
 
         }
 
-        private void Profile()
+        private void LoadProfile()
         {
+            //imagePreview.
 
-        }
-        
-
-        private void Booking_Grid()
-        {
-            using (var db = new NpgsqlConnection(con))
+            try
             {
-                db.Open();
-                using (var cmd = db.CreateCommand())
-                {
-                    cmd.CommandType = CommandType.Text;
+                //if (Session["emp_id"] == null)
+                //{
+                //    // Session expired or not set, redirect to login
+                //    Response.Redirect("Login.aspx");
+                //    return;
+                //}
 
+                int empID = (int)Session["emp_id"];  // Retrieve admin ID from session
+
+
+                //As if naa sulod
+                //int empID = 1026;
+                byte[] imageData = null;  // Initialize imageData
+
+                // Define the PostgreSQL connection
+                using (var db = new NpgsqlConnection(con))
+                {
+                    db.Open();
+
+                    // PostgreSQL query to get profile image
+                    string query = "SELECT emp_profile FROM EMPLOYEE WHERE emp_id = @id";
+                    using (var cmd = new NpgsqlCommand(query, db))
+                    {
+                        // Set the parameter for admin ID
+                        cmd.Parameters.AddWithValue("@id", NpgsqlTypes.NpgsqlDbType.Integer, empID);
+
+                        // Execute the query and retrieve the image data
+                        var result = cmd.ExecuteScalar();
+
+                        if (result != null && result != DBNull.Value)
+                        {
+                            imageData = (byte[])result;  // Cast the result to byte array
+                        }
+                    }
+                }
+
+                int role_id = (int)Session["role_id"];
+                using (var db2 = new NpgsqlConnection(con))
+                {
+                    db2.Open();
+                    using (var cmd2 = db2.CreateCommand())
+                    {
+                        cmd2.CommandType = CommandType.Text;
+                        cmd2.CommandText = "SELECT ROLE_NAME FROM ROLES WHERE ROLE_ID = @role_id ";
+
+                        cmd2.Parameters.AddWithValue("@role_id", role_id);
+                        using (var reader2 = cmd2.ExecuteReader())
+                        {
+                            if (reader2.Read())
+                            {
+                                Employee_Role.Text = reader2["ROLE_NAME"].ToString();
+                            }
+                        }
+                    }
+                }
+
+
+                // Check if the profile_image control exists and is not null
+                if (profile_image != null)
+                {
+                    if (imageData != null && imageData.Length > 0)
+                    {
+                        string base64String = Convert.ToBase64String(imageData);
+                        profile_image.ImageUrl = "data:image/jpeg;base64," + base64String;  // Set image as base64 string
+                        //imagePreviewUpdate.ImageUrl = "data:image/jpeg;base64," + base64String;
+                    }
+                    else
+                    {
+                        profile_image.ImageUrl = "~/Pictures/blank_prof.png";  // Default image if no profile picture found
+                    }
+                }
+                else
+                {
+                    Response.Write("<script>alert('Profile image control is not found');</script>");
                 }
             }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it
+                Response.Write("<script>alert('Error loading profile image: " + ex.Message + "');</script>");
+                profile_image.ImageUrl = "~/Pictures/blank_prof.png";  // Fallback in case of an error
+            }
         }
-        //private void GridViewOP()
-        //{
-        //    using (var db = new NpgsqlConnection(con))
-        //    {
-        //        db.Open();
-        //        using (var cmd = db.CreateCommand())
-        //        {
-        //            cmd.CommandType = CommandType.Text;
-        //            cmd.CommandText = "SELECT * FROM EMPLOYEE WHERE EMP_STATUS != 'Inactive' AND ROLE_ID = 5 ORDER BY emp_status = 'Active'";
 
-        //            DataTable op_datatable = new DataTable();
-        //            NpgsqlDataAdapter op_sda = new NpgsqlDataAdapter(cmd);
-        //            op_sda.Fill(op_datatable);
-
-        //            // Bind the DataTable to the GridView
-        //            gridViewDispatcher.DataSource = op_datatable;
-        //            gridViewDispatcher.DataBind();
-        //        }
-        //    }
-        //}
-
-
-
-
+          
         private void GridViewBooking()
         {
             using (var db = new NpgsqlConnection(con))
@@ -108,6 +157,7 @@ namespace Capstone
             // Show the bk_id in an alert
             Response.Write("<script>alert('Button is clicked! Booking ID: " + bk_id + "');</script>");
         }
+
         protected void Update_Click(object sender, EventArgs e)
         {
             // Cast the sender to a LinkButton
@@ -212,77 +262,7 @@ namespace Capstone
 
 
 
-        //protected void btnAddTruckSlip_Click(object sender, EventArgs e)
-        //{
-        //    string id = txtbxID.Text;
-        //    int bk_id = Convert.ToInt32(id);
-
-        //    // Check if a file is uploaded
-        //    byte[] imageData = formFile.HasFile ? formFile.FileBytes : null;
-
-        //    try
-        //    {
-
-        //        if (imageData == null)
-        //        {
-        //            // Display SweetAlert if no image is uploaded
-        //            ClientScript.RegisterClientScriptBlock(this.GetType(), "alert",
-        //                "swal('No File!', 'Please upload a truck slip.', 'warning')", true);
-        //            return; // Stop further execution
-        //        }
-
-        //        using (var db = new NpgsqlConnection(con))
-        //        {
-        //            db.Open();
-        //            using (var cmd = db.CreateCommand())
-        //            {
-        //                cmd.CommandType = CommandType.Text;
-
-        //                // Check if a new truck slip is uploaded or not
-        //                if (imageData != null)
-        //                {
-        //                    // Updating truck slip for the given booking ID
-        //                    cmd.CommandText = "UPDATE BOOKING SET truck_slip  = @truck_slip," +
-        //                                      "BK_STATUS = 'Pending Payment' " +
-        //                                      "WHERE bk_id = @bk_id";
-        //                    cmd.Parameters.AddWithValue("@truck_slip", imageData);
-        //                    cmd.Parameters.AddWithValue("@bk_id", bk_id);
-        //                    ClientScript.RegisterStartupScript(this.GetType(), "swal", "Swal.fire({title: 'Success', text: 'Truck Slip Registered Successfully!', icon: 'success', confirmButtonColor: '#3085d6', cancelButtonColor: '#d33'});", true);
-        //                }
-        //                else
-        //                {
-
-
-        //                    ClientScript.RegisterStartupScript(this.GetType(), "swal", "Swal.fire('No File!', 'No new truck slip upload Registration Failed!', 'error');", true);
-        //                    // Handle the case where no new image is uploaded (optional)
-        //                    //ClientScript.RegisterClientScriptBlock(this.GetType(), "alert",
-        //                    //    "swal('No File!', 'No new truck slip uploaded.', 'warning')", true);
-
-        //                }
-
-        //                int result = cmd.ExecuteNonQuery();
-        //                if (result >= 1)
-        //                {
-        //                    ClientScript.RegisterClientScriptBlock(this.GetType(), "alert",
-        //                        "swal('Success!', 'Truck Slip Updated!', 'success')", true);
-
-        //                    // Refresh the GridView if needed
-        //                    GridViewBooking();
-        //                }
-        //                else
-        //                {
-        //                    ClientScript.RegisterClientScriptBlock(this.GetType(), "alert",
-        //                        "swal('Failed!', 'Truck Slip Update Failed!', 'error')", true);
-        //                }
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ClientScript.RegisterClientScriptBlock(this.GetType(), "alert",
-        //                "swal('Unsuccessful!', '" + ex.Message + "', 'error')", true);
-        //    }
-        //}
+       
 
 
         protected void btnAddTruckSlip_Click(object sender, EventArgs e)
