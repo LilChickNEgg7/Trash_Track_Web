@@ -124,7 +124,7 @@ namespace Capstone
             }
         }
 
-          
+
         private void GridViewBooking()
         {
             using (var db = new NpgsqlConnection(con))
@@ -133,7 +133,7 @@ namespace Capstone
                 using (var cmd = db.CreateCommand())
                 {
                     cmd.CommandType = CommandType.Text;
-                    cmd.CommandText = "SELECT bk_id, bk_date, bk_status, truck_slip, cus_id FROM booking ORDER BY bk_created_at DESC"; // Query to fetch relevant columns
+                    cmd.CommandText = "SELECT bk_id, bk_date, bk_status, bk_waste_scale_slip, cus_id FROM booking ORDER BY bk_created_at DESC"; // Query to fetch relevant columns
 
                     DataTable booking_datatable = new DataTable();
                     NpgsqlDataAdapter booking_sda = new NpgsqlDataAdapter(cmd);
@@ -203,7 +203,7 @@ namespace Capstone
                         var reader = cmd.ExecuteReader();
                         if (reader.Read())
                         {
-                            byte[] imageData = reader["truck_slip"] as byte[];
+                            byte[] imageData = reader["bk_waste_scale_slip"] as byte[];
                             province = reader["bk_province"].ToString();
                             city = reader["bk_city"].ToString();
                             barangay = reader["bk_brgy"].ToString();
@@ -235,15 +235,16 @@ namespace Capstone
                                 imagePreview.ImageUrl = "~/Pictures/blank_prof.png";
                             }
 
-                            // Disable the Upload button if the booking is cancelled
-                            if (book_status == "Cancelled")
+                            // Enable the Upload button if the booking status is "Ongoing" or "Collected"
+                            if (book_status == "Ongoing" || book_status == "Collected")
                             {
-                                btnAddTruckSlip.Enabled = false;  // Disable button if cancelled
+                                btnAddTruckSlip.Enabled = true;  // Enable button if status is Ongoing or Collected
                             }
                             else
                             {
-                                btnAddTruckSlip.Enabled = true;  // Enable button otherwise
+                                btnAddTruckSlip.Enabled = false;  // Disable button for other statuses
                             }
+
                         }
                         else
                         {
@@ -262,7 +263,7 @@ namespace Capstone
 
 
 
-       
+
 
 
         protected void btnAddTruckSlip_Click(object sender, EventArgs e)
@@ -294,10 +295,10 @@ namespace Capstone
                         cmd.CommandType = CommandType.Text;
 
                         // Updating truck slip for the given booking ID
-                        cmd.CommandText = "UPDATE BOOKING SET truck_slip  = @truck_slip," +
-                                          "BK_STATUS = 'Pending Payment' " +
+                        cmd.CommandText = "UPDATE BOOKING SET bk_waste_scale_slip  = @bk_waste_scale_slip," +
+                                          "BK_STATUS = 'Collected' " +
                                           "WHERE bk_id = @bk_id";
-                        cmd.Parameters.AddWithValue("@truck_slip", imageData);
+                        cmd.Parameters.AddWithValue("@bk_waste_scale_slip", imageData);
                         cmd.Parameters.AddWithValue("@bk_id", bk_id);
 
                         int result = cmd.ExecuteNonQuery();
