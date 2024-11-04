@@ -459,7 +459,7 @@
 
                                     <!-- Buttons to Stop or Start Booking -->
                                     <div class="row mb-3">
-                                        <label for="TextBox1" class="col-sm-2 col-form-label" style="color: #ffffff;">Button Start Booking</label>
+                                        <label for="TextBox1" class="col-sm-2 col-form-label" style="color: #ffffff;">Button Star</label>
                                         <div class="col-sm-10 offset-sm-2">
                                             <asp:Button ID="startbkbtn" CssClass="btn btn-success" runat="server" Text="Start Booking"
                                                 OnClick="startbkbtn_Click" CausesValidation="false" />
